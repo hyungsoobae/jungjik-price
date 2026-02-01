@@ -1,4 +1,4 @@
-package com.zz95.jungjik.controller;
+package com.zz95.jungjik.api.scraping;
 
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;

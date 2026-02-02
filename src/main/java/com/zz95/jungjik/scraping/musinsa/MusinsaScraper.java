@@ -17,7 +17,6 @@ public class MusinsaScraper implements PriceScraper {
     private static final String MUSINSA_DOMAIN = "musinsa.com";
 
     @Override
-    @Override
     public boolean supports(String url) {
         try {
             java.net.URI uri = new java.net.URI(url);

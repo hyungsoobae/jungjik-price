@@ -17,8 +17,15 @@ public class MusinsaScraper implements PriceScraper {
     private static final String MUSINSA_DOMAIN = "musinsa.com";
 
     @Override
+    @Override
     public boolean supports(String url) {
-        return url.contains(MUSINSA_DOMAIN);
+        try {
+            java.net.URI uri = new java.net.URI(url);
+            String host = uri.getHost();
+            return host != null && (host.equals("www.musinsa.com") || host.equals("musinsa.com"));
+        } catch (java.net.URISyntaxException e) {
+            return false;
+        }
     }
 
     @Override

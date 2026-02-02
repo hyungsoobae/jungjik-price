@@ -13,3 +13,8 @@ spring:
 
   flyway:
     enabled: true
+
+
+admin:
+  api:
+    token:

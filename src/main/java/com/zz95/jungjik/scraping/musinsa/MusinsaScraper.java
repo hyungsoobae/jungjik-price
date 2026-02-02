@@ -21,7 +21,7 @@ public class MusinsaScraper implements PriceScraper {
         try {
             java.net.URI uri = new java.net.URI(url);
             String host = uri.getHost();
-            return host != null && (host.equals("www.musinsa.com") || host.equals("musinsa.com"));
+            return host != null && (host.equals("www." + MUSINSA_DOMAIN) || host.equals(MUSINSA_DOMAIN));
         } catch (java.net.URISyntaxException e) {
             return false;
         }

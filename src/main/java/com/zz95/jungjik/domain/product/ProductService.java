@@ -40,7 +40,7 @@ public class ProductService {
                 // product가 있을 때
                 .map(product -> new ProductRegisterResult(
                         product.getId(),
-                        scraped.getName(),
+                        product.getName(),
                         scraped.getPrice(),
                         false
                 ))

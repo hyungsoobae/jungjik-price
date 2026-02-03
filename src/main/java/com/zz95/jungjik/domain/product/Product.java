@@ -1,11 +1,10 @@
 package com.zz95.jungjik.domain.product;
 
+import com.zz95.jungjik.global.common.BaseTimeEntity;
 import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
                 )
         }
 )
-public class Product {
+public class Product extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,12 +55,6 @@ public class Product {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
     public Product(
             String externalProductId,
             ScraperType source,
@@ -73,7 +66,5 @@ public class Product {
         this.name = name;
         this.productUrl = productUrl;
         this.isActive = true;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -36,35 +36,25 @@ public class ProductService {
             throw new IllegalStateException("상품 스크래핑 실패: " + productUrl, e);
         }
 
-        // Product 조회
-        Product product = productRepository
-                .findBySourceAndExternalProductId(
-                        source,
-                        scraped.getProductId()
-                )
-                .orElse(null);
-
-        boolean isNew = false;
-
-        // 없으면 생성
-        if (product == null) {
-            product = productRepository.save(
-                    new Product(
-                            scraped.getProductId(),
-                            source,
-                            scraped.getName(),
-                            productUrl
-                    )
-            );
-            isNew = true;
-        }
-
-        // 결과 반환
-        return new ProductRegisterResult(
-                product.getId(),
-                scraped.getName(),
-                scraped.getPrice(),
-                isNew
-        );
+        return productRepository.findBySourceAndExternalProductId(source, scraped.getProductId())
+                // product가 있을 때
+                .map(product -> new ProductRegisterResult(
+                        product.getId(),
+                        scraped.getName(),
+                        scraped.getPrice(),
+                        false
+                ))
+                // product가 없을 때
+                .orElseGet(() -> {
+                    Product newProduct = productRepository.save(
+                            new Product(scraped.getProductId(), source, scraped.getName(), productUrl)
+                    );
+                    return new ProductRegisterResult(
+                            newProduct.getId(),
+                            newProduct.getName(),
+                            scraped.getPrice(),
+                            true
+                    );
+                });
     }
 }

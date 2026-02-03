@@ -65,7 +65,25 @@ public class MusinsaScraper implements PriceScraper {
     }
 
     private String extractProductId(String url) {
-        // https://www.musinsa.com/products/4105642
-        return url.substring(url.lastIndexOf("/") + 1);
+        // ex) https://www.musinsa.com/products/4105642
+        try {
+            java.net.URI uri = new java.net.URI(url);
+            String path = uri.getPath();
+
+            if (path == null || path.isEmpty()) {
+                throw new IllegalArgumentException("URL 경로가 비어있습니다: " + url);
+            }
+
+            // 경로의 마지막 세그먼트 추출
+            String productId = path.substring(path.lastIndexOf("/") + 1);
+
+            if (productId.isEmpty()) {
+                throw new IllegalArgumentException("상품 ID를 추출할 수 없습니다: " + url);
+            }
+
+            return productId;
+        } catch (java.net.URISyntaxException e) {
+            throw new IllegalArgumentException("잘못된 URL 형식입니다: " + url, e);
+        }
     }
 }

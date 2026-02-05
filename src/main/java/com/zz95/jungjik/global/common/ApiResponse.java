@@ -1,5 +1,6 @@
 package com.zz95.jungjik.global.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zz95.jungjik.global.error.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private String status;

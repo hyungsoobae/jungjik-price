@@ -4,6 +4,7 @@ import com.zz95.jungjik.api.product.dto.ProductRegisterRequest;
 import com.zz95.jungjik.api.product.dto.ProductRegisterResponse;
 import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
+import com.zz95.jungjik.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ProductRegisterResponse register(
-            @RequestBody @Valid ProductRegisterRequest request
-    ) {
-        ProductRegisterResult result =
-                productService.register(request.productUrl());
-
-        return ProductRegisterResponse.from(result);
+    public ApiResponse<ProductRegisterResult> register(@RequestBody @Valid ProductRegisterRequest request) {
+        ProductRegisterResult result = productService.register(request.productUrl());
+        return ApiResponse.success(result);
     }
 }

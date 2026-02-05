@@ -1,6 +1,8 @@
 package com.zz95.jungjik.domain.price;
 
 import com.zz95.jungjik.domain.product.Product;
+import com.zz95.jungjik.global.error.ErrorCode;
+import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
@@ -34,7 +36,7 @@ public class PriceHistoryService {
         } catch (IOException e) {
             log.error("[상품 가격 수집 실패] 상품ID: {}, URL: {}, error: {}",
                     product.getId(), product.getProductUrl(), e.getMessage(), e);
-            return;
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         PriceHistory history = new PriceHistory(

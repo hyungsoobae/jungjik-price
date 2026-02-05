@@ -1,5 +1,7 @@
 package com.zz95.jungjik.scraping.musinsa;
 
+import com.zz95.jungjik.global.error.ErrorCode;
+import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperType;
@@ -71,19 +73,19 @@ public class MusinsaScraper implements PriceScraper {
             String path = uri.getPath();
 
             if (path == null || path.isEmpty()) {
-                throw new IllegalArgumentException("URL 경로가 비어있습니다: " + url);
+                throw new BusinessException(ErrorCode.INVALID_PRODUCT_URL);
             }
 
             // 경로의 마지막 세그먼트 추출
             String productId = path.substring(path.lastIndexOf("/") + 1);
 
             if (productId.isEmpty()) {
-                throw new IllegalArgumentException("상품 ID를 추출할 수 없습니다: " + url);
+                throw new BusinessException(ErrorCode.INVALID_PRODUCT_URL);
             }
 
             return productId;
         } catch (java.net.URISyntaxException e) {
-            throw new IllegalArgumentException("잘못된 URL 형식입니다: " + url, e);
+            throw new BusinessException(ErrorCode.INVALID_PRODUCT_URL);
         }
     }
 }

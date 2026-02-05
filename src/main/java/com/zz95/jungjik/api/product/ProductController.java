@@ -1,7 +1,6 @@
 package com.zz95.jungjik.api.product;
 
 import com.zz95.jungjik.api.product.dto.ProductRegisterRequest;
-import com.zz95.jungjik.api.product.dto.ProductRegisterResponse;
 import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
 import com.zz95.jungjik.global.common.ApiResponse;

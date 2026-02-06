@@ -24,7 +24,7 @@ public class ProductService {
     /**
      * 추적 대상 상품 등록
      */
-    public ProductRegisterResult registProduct(String productUrl) {
+    public ProductRegisterResult registerProduct(String productUrl) {
 
         // 스크래퍼 선택
         PriceScraper scraper = scraperResolver.resolve(productUrl);

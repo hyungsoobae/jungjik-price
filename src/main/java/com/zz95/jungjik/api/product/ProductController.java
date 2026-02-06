@@ -21,8 +21,8 @@ public class ProductController {
      * 상품 등록
      */
     @PostMapping
-    public ApiResponse<ProductRegisterResult> registProduct(@RequestBody @Valid ProductRegisterRequest request) {
-        ProductRegisterResult result = productService.registProduct(request.productUrl());
+    public ApiResponse<ProductRegisterResult> registerProduct(@RequestBody @Valid ProductRegisterRequest request) {
+        ProductRegisterResult result = productService.registerProduct(request.productUrl());
         return ApiResponse.success(result);
     }
 

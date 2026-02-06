@@ -1,6 +1,8 @@
 package com.zz95.jungjik.domain.product;
 
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
+import com.zz95.jungjik.global.error.ErrorCode;
+import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
@@ -13,7 +15,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -22,7 +24,7 @@ public class ProductService {
     /**
      * 추적 대상 상품 등록
      */
-    public ProductRegisterResult register(String productUrl) {
+    public ProductRegisterResult registerProduct(String productUrl) {
 
         // 스크래퍼 선택
         PriceScraper scraper = scraperResolver.resolve(productUrl);
@@ -56,5 +58,16 @@ public class ProductService {
                             true
                     );
                 });
+    }
+
+    public Product getProduct(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = getProduct(id);
+        productRepository.delete(product);
     }
 }

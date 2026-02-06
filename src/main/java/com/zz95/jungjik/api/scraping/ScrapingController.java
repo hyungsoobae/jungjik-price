@@ -1,5 +1,6 @@
 package com.zz95.jungjik.api.scraping;
 
+import com.zz95.jungjik.global.common.ApiResponse;
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
@@ -17,8 +18,8 @@ public class ScrapingController {
     private final ScraperResolver scraperResolver;
 
     @GetMapping("/scrape")
-    public ScrapedProduct scrape(@RequestParam String url) throws IOException {
+    public ApiResponse<ScrapedProduct> scrape(@RequestParam String url) throws IOException {
         PriceScraper scraper = scraperResolver.resolve(url);
-        return scraper.scrape(url);
+        return ApiResponse.success(scraper.scrape(url));
     }
 }

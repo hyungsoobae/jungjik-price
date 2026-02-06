@@ -55,16 +55,24 @@ public class Product extends BaseTimeEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    /**
+     * 현재 최신 가격
+     */
+    @Column(name = "current_price", nullable = false)
+    private Integer currentPrice;
+
     public Product(
             String externalProductId,
             ScraperType source,
             String name,
-            String productUrl
+            String productUrl,
+            Integer currentPrice
     ) {
         this.externalProductId = externalProductId;
         this.source = source;
         this.name = name;
         this.productUrl = productUrl;
+        this.currentPrice = currentPrice;
         this.isActive = true;
     }
 }

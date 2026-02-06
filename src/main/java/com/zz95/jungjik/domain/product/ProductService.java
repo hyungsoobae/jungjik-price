@@ -67,8 +67,7 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = getProduct(id);
         productRepository.delete(product);
     }
 }

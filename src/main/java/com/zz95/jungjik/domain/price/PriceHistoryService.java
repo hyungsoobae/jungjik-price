@@ -11,6 +11,7 @@ import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PriceHistoryService {
 
     private final PriceHistoryRepository priceHistoryRepository;
@@ -31,7 +31,10 @@ public class PriceHistoryService {
     /**
      * 단일 상품 가격 수집
      */
+    @Async("scrapingExecutor")
+    @Transactional
     public void collect(Product product) {
+        log.info("[상품 가격 수집 시작] ProductId: {}, Thread: {}", product.getId(), Thread.currentThread().getName());
 
         PriceScraper scraper = scraperResolver.resolve(product.getProductUrl());
 
@@ -39,9 +42,9 @@ public class PriceHistoryService {
         try {
             scraped = scraper.scrape(product.getProductUrl());
         } catch (IOException e) {
-            log.error("[상품 가격 수집 실패] 상품ID: {}, URL: {}, error: {}",
+            log.error("[상품 가격 수집 실패] ProductId: {}, URL: {}, error: {}",
                     product.getId(), product.getProductUrl(), e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
+            return;
         }
 
         // Product.currentPrice 변동 확인, 업데이트
@@ -64,5 +67,7 @@ public class PriceHistoryService {
         );
 
         priceHistoryRepository.save(history);
+
+        log.info("[상품 가격 수집 완료] ProductId: {}", product.getId());
     }
 }

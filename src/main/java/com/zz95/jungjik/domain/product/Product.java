@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -74,5 +76,13 @@ public class Product extends BaseTimeEntity {
         this.productUrl = productUrl;
         this.currentPrice = currentPrice;
         this.isActive = true;
+    }
+
+    public boolean updateCurrentPrice(Integer newPrice) {
+        if (Objects.equals(this.currentPrice, newPrice)) {
+            return false;
+        }
+        this.currentPrice = newPrice;
+        return true;
     }
 }

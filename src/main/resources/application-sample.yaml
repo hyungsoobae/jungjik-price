@@ -14,6 +14,9 @@ spring:
   flyway:
     enabled: true
 
+slack:
+  webhook:
+    url:
 
 admin:
   api:

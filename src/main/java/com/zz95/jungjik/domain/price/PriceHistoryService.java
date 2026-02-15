@@ -2,8 +2,6 @@ package com.zz95.jungjik.domain.price;
 
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductRepository;
-import com.zz95.jungjik.global.error.ErrorCode;
-import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.global.slack.SlackClient;
 import com.zz95.jungjik.global.slack.SlackMessageGenerator;
 import com.zz95.jungjik.scraping.PriceScraper;
@@ -41,9 +39,15 @@ public class PriceHistoryService {
         ScrapedProduct scraped;
         try {
             scraped = scraper.scrape(product.getProductUrl());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("[상품 가격 수집 실패] ProductId: {}, URL: {}, error: {}",
                     product.getId(), product.getProductUrl(), e.getMessage(), e);
+
+            var scrapingErrorNotice = SlackMessageGenerator.getScrapingErrorNotice(
+                    product, e
+            );
+            slackClient.sendToAdmin(scrapingErrorNotice);
+
             return;
         }
 
@@ -53,10 +57,10 @@ public class PriceHistoryService {
 
         // 가격 변동 시 Slack 알림 발송
         if (isChanged) {
-            var message = SlackMessageGenerator.getPriceNotice(
-                    product.getName(), oldPrice, scraped.getPrice(), product.getProductUrl()
+            var priceNotice = SlackMessageGenerator.getPriceNotice(
+                    product, oldPrice
             );
-            slackClient.send(message);
+            slackClient.sendToUser(priceNotice);
             productRepository.save(product);
         }
 

@@ -7,6 +7,10 @@ import java.util.List;
 
 public class SlackMessageGenerator {
 
+    private SlackMessageGenerator() {
+        // 의도치 않은 인스턴스화 방지
+    }
+
     /**
      * 가격 변동 notice (사용자)
      */

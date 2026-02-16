@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;

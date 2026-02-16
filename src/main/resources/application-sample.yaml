@@ -3,9 +3,9 @@ spring:
     name: jungjik
 
   datasource:
-    url:
-    username:
-    password:
+    url: ${DATASOURCE_URL}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
@@ -14,7 +14,11 @@ spring:
   flyway:
     enabled: true
 
+slack:
+  webhook:
+    user-url: ${SLACK_WEBHOOK_USER_URL}
+    admin-url: ${SLACK_WEBHOOK_ADMIN_URL}
 
 admin:
   api:
-    token:
+    token: ${ADMIN_API_TOKEN}

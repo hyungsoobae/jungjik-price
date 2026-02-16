@@ -1,10 +1,13 @@
 package com.zz95.jungjik.domain.product;
 
 import com.zz95.jungjik.global.common.BaseTimeEntity;
+import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -55,16 +58,32 @@ public class Product extends BaseTimeEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    /**
+     * 현재 최신 가격
+     */
+    @Column(name = "current_price", nullable = false)
+    private Integer currentPrice;
+
     public Product(
             String externalProductId,
             ScraperType source,
             String name,
-            String productUrl
+            String productUrl,
+            Integer currentPrice
     ) {
         this.externalProductId = externalProductId;
         this.source = source;
         this.name = name;
         this.productUrl = productUrl;
+        this.currentPrice = currentPrice;
         this.isActive = true;
+    }
+
+    public boolean updateCurrentPrice(ScrapedProduct scraped) {
+        if (Objects.equals(this.currentPrice, scraped.getPrice())) {
+            return false;
+        }
+        this.currentPrice = scraped.getPrice();
+        return true;
     }
 }

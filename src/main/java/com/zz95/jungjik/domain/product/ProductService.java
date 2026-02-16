@@ -8,6 +8,8 @@ import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
 import com.zz95.jungjik.scraping.ScraperType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +51,7 @@ public class ProductService {
                 // product가 없을 때
                 .orElseGet(() -> {
                     Product newProduct = productRepository.save(
-                            new Product(scraped.getProductId(), source, scraped.getName(), productUrl)
+                            new Product(scraped.getProductId(), source, scraped.getName(), productUrl, scraped.getPrice())
                     );
                     return new ProductRegisterResult(
                             newProduct.getId(),
@@ -63,6 +65,10 @@ public class ProductService {
     public Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    public Page<Product> getProductList(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Transactional

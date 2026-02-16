@@ -7,6 +7,10 @@ import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
 import com.zz95.jungjik.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +37,15 @@ public class ProductController {
     public ApiResponse<Product> getProduct(@PathVariable Long id) {
         Product product = productService.getProduct(id);
         return ApiResponse.success(product);
+    }
+
+    /**
+     * 상품 목록 조회
+     */
+    @GetMapping
+    public ApiResponse<Page<Product>> getProductList(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Product> products = productService.getProductList(pageable);
+        return ApiResponse.success(products);
     }
 
     /**

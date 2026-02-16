@@ -1,6 +1,7 @@
 package com.zz95.jungjik.domain.price;
 
 import com.zz95.jungjik.domain.product.Product;
+import com.zz95.jungjik.scraping.ScrapedProduct;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,11 +43,10 @@ public class PriceHistory {
 
     public PriceHistory(
             Product product,
-            Integer price,
-            LocalDateTime collectedAt
+            ScrapedProduct scraped
     ) {
         this.product = product;
-        this.price = price;
-        this.collectedAt = collectedAt;
+        this.price = scraped.getPrice();
+        this.collectedAt = LocalDateTime.now();
     }
 }

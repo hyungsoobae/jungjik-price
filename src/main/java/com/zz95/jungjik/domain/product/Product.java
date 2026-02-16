@@ -1,6 +1,7 @@
 package com.zz95.jungjik.domain.product;
 
 import com.zz95.jungjik.global.common.BaseTimeEntity;
+import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -78,11 +79,11 @@ public class Product extends BaseTimeEntity {
         this.isActive = true;
     }
 
-    public boolean updateCurrentPrice(Integer newPrice) {
-        if (Objects.equals(this.currentPrice, newPrice)) {
+    public boolean updateCurrentPrice(ScrapedProduct scraped) {
+        if (Objects.equals(this.currentPrice, scraped.getPrice())) {
             return false;
         }
-        this.currentPrice = newPrice;
+        this.currentPrice = scraped.getPrice();
         return true;
     }
 }

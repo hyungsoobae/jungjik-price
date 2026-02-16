@@ -23,6 +23,7 @@ public class PriceHistoryService {
 
     private final PriceHistoryRepository priceHistoryRepository;
     private final ProductRepository productRepository;
+    private final PriceUpdateService priceUpdateService;
     private final ScraperResolver scraperResolver;
     private final SlackClient slackClient;
 
@@ -30,13 +31,12 @@ public class PriceHistoryService {
      * 단일 상품 가격 수집
      */
     @Async("scrapingExecutor")
-    @Transactional
     public void collect(Product product) {
         log.info("[상품 가격 수집 시작] ProductId: {}, Thread: {}", product.getId(), Thread.currentThread().getName());
 
         PriceScraper scraper = scraperResolver.resolve(product.getProductUrl());
-
         ScrapedProduct scraped;
+
         try {
             scraped = scraper.scrape(product.getProductUrl());
         } catch (Exception e) {
@@ -51,26 +51,15 @@ public class PriceHistoryService {
             return;
         }
 
-        // Product.currentPrice 변동 확인, 업데이트
         Integer oldPrice = product.getCurrentPrice();
-        boolean isChanged = product.updateCurrentPrice(scraped.getPrice());
+
+        // Product.currentPrice 변동 확인, 업데이트
+        boolean isChanged = priceUpdateService.updateProductAndSaveHistory(product, scraped);
 
         // 가격 변동 시 Slack 알림 발송
         if (isChanged) {
-            var priceNotice = SlackMessageGenerator.getPriceNotice(
-                    product, oldPrice
-            );
-            slackClient.sendToUser(priceNotice);
-            productRepository.save(product);
+            slackClient.sendToUser(SlackMessageGenerator.getPriceNotice(product, oldPrice));
         }
-
-        PriceHistory history = new PriceHistory(
-                product,
-                scraped.getPrice(),
-                LocalDateTime.now()
-        );
-
-        priceHistoryRepository.save(history);
 
         log.info("[상품 가격 수집 완료] ProductId: {}", product.getId());
     }

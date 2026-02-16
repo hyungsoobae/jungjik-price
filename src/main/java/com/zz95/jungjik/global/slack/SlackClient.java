@@ -12,6 +12,8 @@ import java.util.Map;
 @Component
 public class SlackClient {
 
+    private enum ChannelType { USER, ADMIN }
+
     private final RestClient restClient;
     private final String userWebhookUrl;
     private final String adminWebhookUrl;
@@ -29,20 +31,20 @@ public class SlackClient {
      * 사용자 전송 메서드
      */
     public void sendToUser(Map<String, Object> payload) {
-        sendToUrl(userWebhookUrl, payload);
+        sendToUrl(userWebhookUrl, ChannelType.USER, payload);
     }
 
     /**
      * 관리자 전송 메서드
      */
     public void sendToAdmin(Map<String, Object> payload) {
-        sendToUrl(adminWebhookUrl, payload);
+        sendToUrl(adminWebhookUrl, ChannelType.ADMIN, payload);
     }
 
     /**
      * 공통 전송 메서드
      */
-    private void sendToUrl(String url, Map<String, Object> payload) {
+    private void sendToUrl(String url, ChannelType channelType, Map<String, Object> payload) {
         try {
             restClient.post()
                     .uri(url)
@@ -51,7 +53,7 @@ public class SlackClient {
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception e) {
-            log.error("Slack 메시지 발송 실패 (URL: {}): {}", url, e.getMessage());
+            log.error("Slack 메시지 발송 실패 ({}): {}", channelType, e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.zz95.jungjik.global.slack;
 
+import com.zz95.jungjik.global.slack.dto.SlackMessageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -30,26 +31,26 @@ public class SlackClient {
     /**
      * 사용자 전송 메서드
      */
-    public void sendToUser(Map<String, Object> payload) {
+    public void sendToUser(SlackMessageRequest payload) {
         sendToUrl(userWebhookUrl, ChannelType.USER, payload);
     }
 
     /**
      * 관리자 전송 메서드
      */
-    public void sendToAdmin(Map<String, Object> payload) {
-        sendToUrl(adminWebhookUrl, ChannelType.ADMIN, payload);
+    public void sendToAdmin(SlackMessageRequest request) {
+        sendToUrl(adminWebhookUrl, ChannelType.ADMIN, request);
     }
 
     /**
      * 공통 전송 메서드
      */
-    private void sendToUrl(String url, ChannelType channelType, Map<String, Object> payload) {
+    private void sendToUrl(String url, ChannelType channelType, SlackMessageRequest request) {
         try {
             restClient.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(payload)
+                    .body(request)
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception e) {

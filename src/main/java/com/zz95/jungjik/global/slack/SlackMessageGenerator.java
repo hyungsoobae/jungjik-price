@@ -14,7 +14,9 @@ public class SlackMessageGenerator {
         int newPrice = product.getCurrentPrice();
         String color = (newPrice < oldPrice) ? "#36a64f" : "#ff0000";
         String emoji = (newPrice < oldPrice) ? "📉 가격 하락 알림!" : "📈 가격 변동 알림";
-        String rateText = String.format("%+.1f%%", ((double) (newPrice - oldPrice) / oldPrice) * 100);
+        String rateText = oldPrice > 0
+                ? String.format("%+.1f%%", ((double) (newPrice - oldPrice) / oldPrice) * 100)
+                : "";
 
         return new SlackMessageRequest(List.of(
                 new SlackMessageRequest.Attachment(

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/product/list.css}">
+</th:block>
+
+<main layout:fragment="content" class="container">
+    <div class="py-3 px-2">
+        <h4 class="fw-bold mb-4">상품 가격 추적 목록</h4>
+
+        <div id="product-grid" class="product-grid"></div>
+
+        <div id="loader" class="text-center my-4">
+            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+            <span class="ms-2 text-muted small">데이터를 불러오는 중...</span>
+        </div>
+
+        <div id="sentinel" style="height: 50px;"></div>
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/product/list.js}"></script>
+</th:block>
+</html>

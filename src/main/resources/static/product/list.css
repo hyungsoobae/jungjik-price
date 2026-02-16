@@ -1,0 +1,81 @@
+/* 전체 레이아웃 */
+.product-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* 상품 카드 스타일 */
+.product-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 24px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 20px; /* 상품명과 가격 사이 최소 간격 */
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 왼쪽: 상품 정보 영역 */
+.product-info {
+    flex: 1; /* 남는 공간을 다 차지 */
+    min-width: 0; /* 텍스트 오버플로우 방지 */
+}
+
+/* 오른쪽: 가격 및 버튼 영역 */
+.price-section {
+    flex-shrink: 0; /* 공간이 부족해도 줄어들지 않음 */
+    min-width: 140px; /* 가격이 잘리지 않도록 최소 너비 확보 */
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+}
+
+.brand-name {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.product-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 4px;
+    color: #212529;
+}
+
+.price-box {
+    text-align: right;
+}
+
+.current-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0d6efd;
+    white-space: nowrap; /* 가격이 두 줄로 넘어가는 것 방지 */
+}
+
+.price-unit {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+/* 로딩 스피너 숨김 기본값 */
+#loader {
+    display: none;
+}

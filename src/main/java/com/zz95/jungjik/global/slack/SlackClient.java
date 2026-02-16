@@ -20,10 +20,11 @@ public class SlackClient {
     private final String adminWebhookUrl;
 
     public SlackClient(
+            RestClient restClient,
             @Value("${slack.webhook.user-url}") String userWebhookUrl,
             @Value("${slack.webhook.admin-url}") String adminWebhookUrl
     ) {
-        this.restClient = RestClient.create();
+        this.restClient = restClient;
         this.userWebhookUrl = userWebhookUrl;
         this.adminWebhookUrl = adminWebhookUrl;
     }

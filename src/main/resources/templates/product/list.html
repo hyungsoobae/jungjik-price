@@ -13,6 +13,12 @@
 
         <div id="product-grid" class="product-grid"></div>
 
+        <!-- 에러 발생 시 표시되는 배너 (기본 숨김) -->
+        <div id="error-banner" class="text-center my-4">
+            <p class="text-danger small mb-2">데이터를 불러오지 못했습니다.</p>
+            <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">다시 시도</button>
+        </div>
+
         <div id="loader" class="text-center my-4">
             <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
             <span class="ms-2 text-muted small">데이터를 불러오는 중...</span>

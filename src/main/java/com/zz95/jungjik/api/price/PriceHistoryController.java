@@ -35,7 +35,7 @@ public class PriceHistoryController {
             @RequestParam(required = false) Integer days
     ) {
         // 상품 존재 여부 확인 (없으면 ProductService 내부에서 BusinessException 발생)
-        productService.getProduct(productId);
+        productService.validateProductExists(productId);
 
         List<PriceHistoryResponse> histories = (days != null && days > 0)
                 ? priceHistoryService.getHistoriesSince(productId, days)

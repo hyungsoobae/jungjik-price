@@ -76,4 +76,11 @@ public class ProductService {
         Product product = getProduct(id);
         productRepository.delete(product);
     }
+
+    @Transactional(readOnly = true)
+    public void validateProductExists(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+    }
 }

@@ -1,0 +1,17 @@
+/* 공통 변수 */
+:root {
+    --primary-blue: #0d6efd;
+    --border-color: #eee;
+}
+
+/* 기본 폰트 및 배경 설정 */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* 스티키 푸터 등을 위한 기본 높이 설정 */
+html, body {
+    height: 100%;
+}

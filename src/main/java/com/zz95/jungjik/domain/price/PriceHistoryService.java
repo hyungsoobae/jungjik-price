@@ -1,5 +1,6 @@
 package com.zz95.jungjik.domain.price;
 
+import com.zz95.jungjik.domain.price.dto.PriceHistoryResponse;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductRepository;
 import com.zz95.jungjik.global.slack.SlackClient;
@@ -13,8 +14,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -43,11 +44,7 @@ public class PriceHistoryService {
             log.error("[상품 가격 수집 실패] ProductId: {}, URL: {}, error: {}",
                     product.getId(), product.getProductUrl(), e.getMessage(), e);
 
-            var scrapingErrorNotice = SlackMessageGenerator.getScrapingErrorNotice(
-                    product, e
-            );
-            slackClient.sendToAdmin(scrapingErrorNotice);
-
+            slackClient.sendToAdmin(SlackMessageGenerator.getScrapingErrorNotice(product, e));
             return;
         }
 
@@ -62,5 +59,30 @@ public class PriceHistoryService {
         }
 
         log.info("[상품 가격 수집 완료] ProductId: {}", product.getId());
+    }
+
+    /**
+     * 상품 가격 이력 조회 (전체)
+     */
+    @Transactional(readOnly = true)
+    public List<PriceHistoryResponse> getHistories(Long productId) {
+        return priceHistoryRepository
+                .findByProductIdOrderByCollectedAtAsc(productId)
+                .stream()
+                .map(PriceHistoryResponse::from)
+                .toList();
+    }
+
+    /**
+     * 상품 가격 이력 조회 (기간별)
+     */
+    @Transactional(readOnly = true)
+    public List<PriceHistoryResponse> getHistoriesSince(Long productId, int days) {
+        LocalDateTime since = LocalDateTime.now().minusDays(days);
+        return priceHistoryRepository
+                .findByProductIdAndCollectedAtAfterOrderByCollectedAtAsc(productId, since)
+                .stream()
+                .map(PriceHistoryResponse::from)
+                .toList();
     }
 }

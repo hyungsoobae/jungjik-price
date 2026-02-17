@@ -250,6 +250,7 @@
     background: #f1f3f5;
     padding: 3px;
     border-radius: 10px;
+    margin-left: auto;
 }
 
 .period-tab {
@@ -308,3 +309,56 @@
         align-items: flex-start;
     }
 }
+
+/* ── 수집 이력 테이블 ── */
+.history-section {
+    margin-top: 24px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.history-table-wrap {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.history-table thead tr {
+    border-bottom: 2px solid var(--border);
+}
+
+.history-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.history-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #111;
+    white-space: nowrap;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tbody tr:hover td {
+    background: #f8f9fa;
+}
+
+.history-table td.diff-up   { color: var(--high-color); font-weight: 600; }
+.history-table td.diff-down { color: var(--low-color);  font-weight: 600; }
+.history-table td.diff-none { color: var(--text-muted); }

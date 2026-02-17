@@ -72,7 +72,6 @@
             <!-- 차트 섹션 -->
             <div class="chart-section">
                 <div class="chart-toolbar">
-                    <h2 class="chart-title">가격 변동 추이</h2>
                     <div class="period-tabs" id="period-tabs">
                         <button class="period-tab active" data-period="all">전체</button>
                         <button class="period-tab" data-period="30">30일</button>
@@ -81,6 +80,22 @@
                     </div>
                 </div>
                 <div id="price-chart"></div>
+            </div>
+
+            <!-- 가격 이력 테이블 섹션 -->
+            <div class="history-section">
+                <div class="history-table-wrap">
+                    <table class="history-table">
+                        <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>가격</th>
+                            <th>변화</th>
+                        </tr>
+                        </thead>
+                        <tbody id="history-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
         </div>

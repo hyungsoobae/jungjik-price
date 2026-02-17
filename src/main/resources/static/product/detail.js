@@ -35,6 +35,7 @@ class ProductDetailPage {
             this.renderProductInfo(product);
             this.renderStats(histories);
             this.renderChart(histories);
+            this.renderTable(histories);
             this.bindPeriodTabs();
 
             this.showContent();
@@ -270,6 +271,7 @@ class ProductDetailPage {
                 const data = histories.length ? histories : this.allHistories.slice(-1);
                 this.renderChart(data);
                 this.renderStats(data);
+                this.renderTable(data);
             } catch (e) {
                 console.error("기간 필터 적용 실패:", e);
             }
@@ -277,6 +279,57 @@ class ProductDetailPage {
     }
 
     // ── 상태 전환 ────────────────────────────────────────────
+
+    renderTable(histories) {
+        const tbody = document.getElementById("history-tbody");
+        tbody.innerHTML = "";
+
+        // 최신순 정렬
+        const sorted = [...histories].reverse();
+        const fmt = (n) => n.toLocaleString("ko-KR") + "원";
+        const fmtDate = (iso) => {
+            const d = new Date(iso);
+            const pad = (n) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        };
+
+        sorted.forEach((h, i) => {
+            const prev = sorted[i + 1]; // 최신순이므로 [i+1]이 이전 데이터
+            const diff = prev ? h.price - prev.price : null;
+
+            let diffText = "-";
+            let diffClass = "diff-none";
+            if (diff !== null) {
+                if (diff > 0) {
+                    diffText  = `▲ ${diff.toLocaleString("ko-KR")}원`;
+                    diffClass = "diff-up";
+                } else if (diff < 0) {
+                    diffText  = `▼ ${Math.abs(diff).toLocaleString("ko-KR")}원`;
+                    diffClass = "diff-down";
+                } else {
+                    diffText = "-";
+                }
+            }
+
+            const tr = document.createElement("tr");
+
+            const tdDate = document.createElement("td");
+            tdDate.textContent = fmtDate(h.collectedAt);
+            tdDate.style.color = "var(--text-muted)";
+
+            const tdPrice = document.createElement("td");
+            tdPrice.textContent = fmt(h.price);
+            tdPrice.style.fontWeight = "700";
+
+            const tdDiff = document.createElement("td");
+            tdDiff.textContent = diffText;
+            tdDiff.className = diffClass;
+
+            tr.append(tdDate, tdPrice, tdDiff);
+            tbody.appendChild(tr);
+        });
+    }
+
 
     showContent() {
         this.$overlay.style.display = "none";

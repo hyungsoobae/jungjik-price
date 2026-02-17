@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -26,6 +25,7 @@ public class ProductService {
     /**
      * 추적 대상 상품 등록
      */
+    @Transactional
     public ProductRegisterResult registerProduct(String productUrl) {
 
         // 스크래퍼 선택
@@ -62,11 +62,13 @@ public class ProductService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public Page<Product> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable);
     }

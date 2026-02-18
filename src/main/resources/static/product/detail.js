@@ -159,7 +159,7 @@ class ProductDetailPage {
                             year: "yyyy",
                             month: "MM/dd",
                             day:   "MM/dd",
-                            hour:  "MM/dd HH:mm"
+                            hour:  "MM/dd"
                         }
                     },
                     axisBorder: { show: false },
@@ -180,7 +180,7 @@ class ProductDetailPage {
                 },
                 tooltip: {
                     theme: "dark",
-                    x: { format: "yyyy.MM.dd HH:mm" },
+                    x: { format: "yyyy.MM.dd" },
                     y: { formatter: (val) => fmt(val) }
                 },
                 markers: {

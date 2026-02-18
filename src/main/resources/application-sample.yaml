@@ -22,3 +22,9 @@ slack:
 admin:
   api:
     token: ${ADMIN_API_TOKEN}
+
+scraping:
+  user-agents:
+    - "sample1"
+    - "sample2"
+    - "sample3"

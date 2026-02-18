@@ -159,7 +159,7 @@ class ProductDetailPage {
                             year: "yyyy",
                             month: "MM/dd",
                             day:   "MM/dd",
-                            hour:  "MM/dd HH:mm"
+                            hour:  "MM/dd"
                         }
                     },
                     axisBorder: { show: false },
@@ -180,7 +180,7 @@ class ProductDetailPage {
                 },
                 tooltip: {
                     theme: "dark",
-                    x: { format: "yyyy.MM.dd HH:mm" },
+                    x: { format: "yyyy.MM.dd" },
                     y: { formatter: (val) => fmt(val) }
                 },
                 markers: {
@@ -301,7 +301,7 @@ class ProductDetailPage {
         const fmtDate = (iso) => {
             const d = new Date(iso);
             const pad = (n) => String(n).padStart(2, "0");
-            return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
         };
 
         sorted.forEach((h, i) => {

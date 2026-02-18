@@ -33,11 +33,17 @@ class ProductDetailPage {
 
             this.allHistories = histories;
             this.renderProductInfo(product);
-            this.renderStats(histories);
-            this.renderChart(histories);
-            this.renderTable(histories);
-            this.bindPeriodTabs();
 
+            if (histories.length === 0) {
+                this.showEmptyState();
+            } else {
+                this.hideEmptyState();
+                this.renderStats(histories);
+                this.renderChart(histories);
+                this.renderTable(histories);
+            }
+
+            this.bindPeriodTabs();
             this.showContent();
         } catch (e) {
             console.error("상세 페이지 초기화 실패:", e);
@@ -268,10 +274,15 @@ class ProductDetailPage {
 
             try {
                 const histories = await this.fetchHistories(days);
-                const data = histories.length ? histories : this.allHistories.slice(-1);
-                this.renderChart(data);
-                this.renderStats(data);
-                this.renderTable(data);
+
+                if (histories.length === 0) {
+                    this.showEmptyState();
+                } else {
+                    this.hideEmptyState();
+                    this.renderChart(histories);
+                    this.renderStats(histories);
+                    this.renderTable(histories);
+                }
             } catch (e) {
                 console.error("기간 필터 적용 실패:", e);
             }
@@ -339,6 +350,28 @@ class ProductDetailPage {
     showError() {
         this.$overlay.style.display = "none";
         this.$error.style.display   = "flex";
+    }
+
+    showEmptyState() {
+        // 차트 숨기고 빈 상태 표시
+        document.getElementById("price-chart").style.display = "none";
+        document.getElementById("chart-empty-state").style.display = "block";
+
+        // 테이블 숨기고 빈 상태 표시
+        document.querySelector(".history-table-wrap").style.display = "none";
+        document.getElementById("table-empty-state").style.display = "block";
+
+        // 통계 카드는 대시(-)로 유지
+    }
+
+    hideEmptyState() {
+        // 차트 표시
+        document.getElementById("price-chart").style.display = "block";
+        document.getElementById("chart-empty-state").style.display = "none";
+
+        // 테이블 표시
+        document.querySelector(".history-table-wrap").style.display = "block";
+        document.getElementById("table-empty-state").style.display = "none";
     }
 }
 

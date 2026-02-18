@@ -250,7 +250,6 @@
     background: #f1f3f5;
     padding: 3px;
     border-radius: 10px;
-    margin-left: auto;
 }
 
 .period-tab {
@@ -362,3 +361,15 @@
 .history-table td.diff-up   { color: var(--high-color); font-weight: 600; }
 .history-table td.diff-down { color: var(--low-color);  font-weight: 600; }
 .history-table td.diff-none { color: var(--text-muted); }
+
+/* ── 빈 데이터 메시지 ── */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-msg {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}

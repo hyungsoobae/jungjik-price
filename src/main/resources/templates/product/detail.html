@@ -72,7 +72,7 @@
             <!-- 차트 섹션 -->
             <div class="chart-section">
                 <div class="chart-toolbar">
-                    <div class="period-tabs" id="period-tabs">
+                    <div class="period-tabs" id="period-tabs" style="margin-left: auto;">
                         <button class="period-tab active" data-period="all">전체</button>
                         <button class="period-tab" data-period="30">30일</button>
                         <button class="period-tab" data-period="14">2주</button>
@@ -80,6 +80,9 @@
                     </div>
                 </div>
                 <div id="price-chart"></div>
+                <div id="chart-empty-state" class="empty-state" style="display:none;">
+                    <p class="empty-msg">선택한 기간에 수집된 데이터가 없습니다</p>
+                </div>
             </div>
 
             <!-- 가격 이력 테이블 섹션 -->
@@ -95,6 +98,9 @@
                         </thead>
                         <tbody id="history-tbody"></tbody>
                     </table>
+                </div>
+                <div id="table-empty-state" class="empty-state" style="display:none;">
+                    <p class="empty-msg">선택한 기간에 수집된 데이터가 없습니다</p>
                 </div>
             </div>
 

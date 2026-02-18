@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/product/detail.css}">
+</th:block>
+
+<main layout:fragment="content" class="container-fluid px-0">
+
+    <!-- 로딩 오버레이 -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- 에러 화면 -->
+    <div id="error-state" class="error-state" style="display:none;">
+        <div class="error-icon">⚠</div>
+        <p class="error-msg">데이터를 불러오지 못했습니다.</p>
+        <button class="btn-retry" onclick="location.reload()">다시 시도</button>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div id="main-content" style="display:none;">
+
+        <!-- 헤더 배너 영역 -->
+        <div class="detail-header">
+            <div class="header-inner container">
+                <a href="/products" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    목록
+                </a>
+                <div class="header-badge" id="header-source-badge">MUSINSA</div>
+            </div>
+        </div>
+
+        <div class="container detail-body">
+
+            <!-- 상품 정보 섹션 -->
+            <div class="product-meta-section">
+                <div class="product-meta-left">
+                    <p class="meta-source" id="display-source"></p>
+                    <h1 class="product-title" id="display-name">-</h1>
+                    <a class="shop-link" id="display-url" href="#" target="_blank" rel="noopener noreferrer">
+                        쇼핑몰에서 보기
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+                <div class="product-meta-right">
+                    <p class="price-label">현재가</p>
+                    <p class="current-price-big" id="display-current-price">-</p>
+                </div>
+            </div>
+
+            <!-- 통계 카드 3개 -->
+            <div class="stats-row">
+                <div class="stat-card stat-low">
+                    <span class="stat-label">역대 최저가</span>
+                    <span class="stat-value" id="stat-min">-</span>
+                </div>
+                <div class="stat-card stat-avg">
+                    <span class="stat-label">평균가</span>
+                    <span class="stat-value" id="stat-avg">-</span>
+                </div>
+                <div class="stat-card stat-high">
+                    <span class="stat-label">역대 최고가</span>
+                    <span class="stat-value" id="stat-max">-</span>
+                </div>
+            </div>
+
+            <!-- 차트 섹션 -->
+            <div class="chart-section">
+                <div class="chart-toolbar">
+                    <div class="period-tabs" id="period-tabs" style="margin-left: auto;">
+                        <button class="period-tab active" data-period="all">전체</button>
+                        <button class="period-tab" data-period="30">30일</button>
+                        <button class="period-tab" data-period="14">2주</button>
+                        <button class="period-tab" data-period="7">1주</button>
+                    </div>
+                </div>
+                <div id="price-chart"></div>
+                <div id="chart-empty-state" class="empty-state" style="display:none;">
+                    <p class="empty-msg">선택한 기간에 수집된 데이터가 없습니다</p>
+                </div>
+            </div>
+
+            <!-- 가격 이력 테이블 섹션 -->
+            <div class="history-section">
+                <div class="history-table-wrap">
+                    <table class="history-table">
+                        <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>가격</th>
+                            <th>변화</th>
+                        </tr>
+                        </thead>
+                        <tbody id="history-tbody"></tbody>
+                    </table>
+                </div>
+                <div id="table-empty-state" class="empty-state" style="display:none;">
+                    <p class="empty-msg">선택한 기간에 수집된 데이터가 없습니다</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<th:block layout:fragment="script">
+    <!-- ApexCharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
+    <script th:inline="javascript">
+        const PRODUCT_ID = [[${productId}]];
+    </script>
+    <script th:src="@{/product/detail.js}"></script>
+</th:block>
+</html>

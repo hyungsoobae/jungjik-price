@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -26,6 +25,7 @@ public class ProductService {
     /**
      * 추적 대상 상품 등록
      */
+    @Transactional
     public ProductRegisterResult registerProduct(String productUrl) {
 
         // 스크래퍼 선택
@@ -62,11 +62,13 @@ public class ProductService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public Page<Product> getProductList(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
@@ -75,5 +77,12 @@ public class ProductService {
     public void deleteProduct(Long id) {
         Product product = getProduct(id);
         productRepository.delete(product);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateProductExists(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
     }
 }

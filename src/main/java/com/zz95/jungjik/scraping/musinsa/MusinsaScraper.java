@@ -44,6 +44,7 @@ public class MusinsaScraper implements PriceScraper {
 
         Document doc = Jsoup.connect(url)
                 .userAgent(userAgentProvider.getRandomUserAgent())
+                .header("Referer", "https://www." + MUSINSA_DOMAIN)
                 .timeout(5000)
                 .get();
 

@@ -16,9 +16,9 @@ public class PriceCollectScheduler {
     private final PriceHistoryService priceHistoryService;
 
     /**
-     * 매시 30분마다 활성화된 상품 가격 수집
+     * 매일 12에 활성화된 상품 가격 수집
      */
-    @Scheduled(cron = "0 30 * * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void collectPrices() {
         log.info("PriceCollectScheduler.collectPrices : START ");
 

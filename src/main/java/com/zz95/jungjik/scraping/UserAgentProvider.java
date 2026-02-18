@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Setter
 @Component
@@ -13,9 +14,12 @@ import java.util.Random;
 public class UserAgentProvider {
 
     private List<String> userAgents;
-    private final Random random = new Random();
 
     public String getRandomUserAgent() {
-        return userAgents.get(random.nextInt(userAgents.size()));
+        if (userAgents == null || userAgents.isEmpty()) {
+            throw new IllegalStateException("scraping.user-agents 설정이 누락되었습니다.");
+        }
+        int randomIndex = ThreadLocalRandom.current().nextInt(userAgents.size());
+        return userAgents.get(randomIndex);
     }
 }

@@ -5,6 +5,8 @@ import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperType;
+import com.zz95.jungjik.scraping.UserAgentProvider;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,9 +16,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class MusinsaScraper implements PriceScraper {
 
     private static final String MUSINSA_DOMAIN = "musinsa.com";
+
+    private final UserAgentProvider userAgentProvider;
 
     @Override
     public boolean supports(String url) {
@@ -38,7 +43,7 @@ public class MusinsaScraper implements PriceScraper {
     public ScrapedProduct scrape(String url) throws IOException {
 
         Document doc = Jsoup.connect(url)
-                .userAgent("Mozilla/5.0")
+                .userAgent(userAgentProvider.getRandomUserAgent())
                 .timeout(5000)
                 .get();
 

@@ -4,6 +4,8 @@ class ProductListManager {
         this.isLast = false;
         this.isLoading = false;
         this.sortType = 'LATEST';
+        this.keyword = '';
+        this.source = '';
 
         this.container = document.getElementById('product-grid');
         this.loader = document.getElementById('loader');
@@ -15,33 +17,60 @@ class ProductListManager {
     }
 
     init() {
+        this.readUrlParams();
         this.bindEvents();
         this.fetchProducts();
     }
 
+    readUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+
+        this.keyword = params.get('keyword') || '';
+        this.source = params.get('source') || '';
+        this.sortType = params.get('sort') || 'LATEST';
+
+        const headerSearch = document.getElementById('header-search');
+        if (headerSearch && this.keyword) headerSearch.value = this.keyword;
+
+        const headerSource = document.getElementById('header-source');
+        if (headerSource && this.source) headerSource.value = this.source;
+
+        if (this.sortSelect) this.sortSelect.value = this.sortType;
+    }
+
+    updateUrl() {
+        const params = new URLSearchParams();
+        if (this.keyword) params.set('keyword', this.keyword);
+        if (this.source) params.set('source', this.source);
+        if (this.sortType !== 'LATEST') params.set('sort', this.sortType);
+
+        const newUrl = params.toString()
+            ? `${window.location.pathname}?${params.toString()}`
+            : window.location.pathname;
+
+        window.history.pushState({}, '', newUrl);
+    }
+
+    reset() {
+        this.currentPage = 0;
+        this.isLast = false;
+        this.container.innerHTML = '';
+        this.updateUrl();
+        this.fetchProducts();
+    }
+
     bindEvents() {
-        const _this = this;
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '100px',
-            threshold: 0
-        };
-
         this.observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !_this.isLoading && !_this.isLast) {
-                _this.fetchProducts();
+            if (entries[0].isIntersecting && !this.isLoading && !this.isLast) {
+                this.fetchProducts();
             }
-        }, observerOptions);
+        }, { root: null, rootMargin: '100px', threshold: 0 });
 
-        this.observer.observe(_this.sentinel);
+        this.observer.observe(this.sentinel);
 
-        this.sortSelect.addEventListener('change', async (e) => {
-            _this.sortType = e.target.value;
-            _this.currentPage = 0;
-            _this.isLast = false;
-            _this.container.innerHTML = '';
-            await _this.fetchProducts();
+        this.sortSelect.addEventListener('change', (e) => {
+            this.sortType = e.target.value;
+            this.reset();
         });
     }
 
@@ -52,15 +81,23 @@ class ProductListManager {
         this.hideError();
 
         try {
-            const response = await fetch(`/api/products?page=${this.currentPage}&size=3&sort=${this.sortType}`);
-
-            if (!response.ok) {
-                throw new Error(`서버 오류: ${response.status}`);
+            const params = new URLSearchParams();
+            params.set('page', this.currentPage);
+            params.set('size', '10');
+            params.set('sort', this.sortType);
+            if (this.keyword) {
+                params.set('keyword', this.keyword);
             }
+            if (this.source) {
+                params.set('source', this.source);
+            }
+
+            const response = await fetch(`/api/products?${params.toString()}`);
+            if (!response.ok) throw new Error(`서버 오류: ${response.status}`);
 
             const result = await response.json();
 
-            if (result.status === "success" && result.data) {
+            if (result.status === 'success' && result.data) {
                 const { content, last } = result.data;
 
                 if (content && content.length > 0) {

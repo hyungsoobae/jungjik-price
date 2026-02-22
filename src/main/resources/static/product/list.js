@@ -95,10 +95,17 @@ class ProductListManager {
 
         const card = document.createElement('div');
         card.className = 'product-card mb-3';
-        card.style.cursor = 'pointer';
+        // card.style.cursor = 'pointer';
         card.addEventListener('click', () => {
             window.location.href = `/products/${product.id}`;
         });
+
+        // 카드 왼쪽 바 색상
+        if (product.priceDiff > 0) {
+            card.classList.add('card-up');
+        } else if (product.priceDiff < 0) {
+            card.classList.add('card-down');
+        }
 
         // 상품명
         const infoDiv = document.createElement('div');
@@ -118,15 +125,6 @@ class ProductListManager {
         priceDiv.className = 'current-price';
         priceDiv.textContent = formattedPrice;
 
-        // 등락 방향에 따라 색상 결정
-        if (product.priceDiff === null || product.priceDiff === 0) {
-            priceDiv.classList.add('price-neutral');
-        } else if (product.priceDiff > 0) {
-            priceDiv.classList.add('diff-up');
-        } else {
-            priceDiv.classList.add('diff-down');
-        }
-
         const priceUnit = document.createElement('span');
         priceUnit.className = 'price-unit';
         priceUnit.textContent = '원';
@@ -134,8 +132,9 @@ class ProductListManager {
         priceSection.appendChild(priceDiv);
 
         // 등락 정보
+        const diffDiv = document.createElement('div');
+
         if (product.priceDiff !== null && product.priceDiff !== 0) {
-            const diffDiv = document.createElement('div');
             diffDiv.className = 'price-diff ' + (product.priceDiff > 0 ? 'diff-up' : 'diff-down');
 
             const arrow = product.priceDiff > 0 ? '▲' : '▼';
@@ -149,6 +148,10 @@ class ProductListManager {
             changedAtDiv.className = 'price-changed-at';
             changedAtDiv.textContent = this.formatChangedAt(product.priceChangedAt);
             priceSection.appendChild(changedAtDiv);
+        } else {
+            diffDiv.className = 'price-changed-at';
+            diffDiv.textContent = '-';
+            priceSection.appendChild(diffDiv);
         }
 
         card.appendChild(infoDiv);

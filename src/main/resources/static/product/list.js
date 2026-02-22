@@ -102,8 +102,21 @@ class ProductListManager {
         const nameDiv = document.createElement('div');
         nameDiv.className = 'product-name';
         nameDiv.textContent = product.name; // textContent로 XSS 방지
-
         infoDiv.appendChild(nameDiv);
+
+        // 등락 정보
+        if (product.priceDiff !== null && product.priceDiff !== 0) {
+            const diffDiv = document.createElement('div');
+            diffDiv.className = 'price-diff ' + (product.priceDiff > 0 ? 'diff-up' : 'diff-down');
+
+            const arrow = product.priceDiff > 0 ? '▲' : '▼';
+            const absDiff = Math.abs(product.priceDiff).toLocaleString('ko-KR');
+            const absRate = Math.abs(product.diffRate).toFixed(1);
+            const changedAt = this.formatChangedAt(product.priceChangedAt);
+
+            diffDiv.textContent = `${arrow} ${absDiff}원 (${absRate}%) · ${changedAt}`;
+            infoDiv.appendChild(diffDiv);
+        }
 
         const priceSection = document.createElement('div');
         priceSection.className = 'price-section';
@@ -146,6 +159,21 @@ class ProductListManager {
         if (this.errorBanner) {
             this.errorBanner.style.display = 'none';
         }
+    }
+
+    formatChangedAt(isoString) {
+        if (!isoString) return '';
+
+        const changed = new Date(isoString);
+        const now = new Date();
+        const diffMs = now - changed;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return '오늘 변동';
+        if (diffDays === 1) return '어제 변동';
+        if (diffDays < 7) return `${diffDays}일 전 변동`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)}주 전 변동`;
+        return `${Math.floor(diffDays / 30)}개월 전 변동`;
     }
 }
 

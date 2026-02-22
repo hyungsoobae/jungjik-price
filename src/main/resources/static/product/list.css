@@ -29,6 +29,21 @@
     min-width: 0; /* 텍스트 오버플로우 방지 */
 }
 
+/* 상품 가격 등락 정보 */
+.price-diff {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.diff-up {
+    color: #d9363e;
+}
+
+.diff-down {
+    color: #1a9e5f;
+}
+
 /* 오른쪽: 가격 및 버튼 영역 */
 .price-section {
     flex-shrink: 0;

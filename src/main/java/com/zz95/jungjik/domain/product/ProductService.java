@@ -1,5 +1,6 @@
 package com.zz95.jungjik.domain.product;
 
+import com.zz95.jungjik.api.product.dto.ProductListResponse;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
 import com.zz95.jungjik.global.error.ErrorCode;
 import com.zz95.jungjik.global.error.exception.BusinessException;
@@ -69,8 +70,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Product> getProductList(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<ProductListResponse> getProductList(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(ProductListResponse::from);
     }
 
     @Transactional

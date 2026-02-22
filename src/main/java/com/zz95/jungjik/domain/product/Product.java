@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -64,6 +65,18 @@ public class Product extends BaseTimeEntity {
     @Column(name = "current_price", nullable = false)
     private Integer currentPrice;
 
+    /**
+     * 이전 가격
+     */
+    @Column(name = "previous_price")
+    private Integer previousPrice;
+
+    /**
+     * 가격 변동 일시
+     */
+    @Column(name = "price_changed_at")
+    private LocalDateTime priceChangedAt;
+
     public Product(
             String externalProductId,
             ScraperType source,
@@ -83,6 +96,8 @@ public class Product extends BaseTimeEntity {
         if (Objects.equals(this.currentPrice, scraped.getPrice())) {
             return false;
         }
+        this.previousPrice = this.currentPrice;
+        this.priceChangedAt = LocalDateTime.now();
         this.currentPrice = scraped.getPrice();
         return true;
     }

@@ -3,11 +3,13 @@ class ProductListManager {
         this.currentPage = 0;
         this.isLast = false;
         this.isLoading = false;
+        this.sortType = 'LATEST';
 
         this.container = document.getElementById('product-grid');
         this.loader = document.getElementById('loader');
         this.sentinel = document.getElementById('sentinel');
         this.errorBanner = document.getElementById('error-banner');
+        this.sortSelect = document.getElementById('sort-select');
 
         this.init();
     }
@@ -18,6 +20,8 @@ class ProductListManager {
     }
 
     bindEvents() {
+        const _this = this;
+
         const observerOptions = {
             root: null,
             rootMargin: '100px',
@@ -25,13 +29,20 @@ class ProductListManager {
         };
 
         this.observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !this.isLoading && !this.isLast) {
-                console.log("📍 바닥 감지됨! 다음 페이지 호출");
-                this.fetchProducts();
+            if (entries[0].isIntersecting && !_this.isLoading && !_this.isLast) {
+                _this.fetchProducts();
             }
         }, observerOptions);
 
-        this.observer.observe(this.sentinel);
+        this.observer.observe(_this.sentinel);
+
+        this.sortSelect.addEventListener('change', async (e) => {
+            _this.sortType = e.target.value;
+            _this.currentPage = 0;
+            _this.isLast = false;
+            _this.container.innerHTML = '';
+            await _this.fetchProducts();
+        });
     }
 
     async fetchProducts() {
@@ -39,10 +50,9 @@ class ProductListManager {
 
         this.setLoading(true);
         this.hideError();
-        console.log(`📡 요청 중... 페이지: ${this.currentPage}`);
 
         try {
-            const response = await fetch(`/api/products?page=${this.currentPage}&size=3&sort=id,desc`);
+            const response = await fetch(`/api/products?page=${this.currentPage}&size=3&sort=${this.sortType}`);
 
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status}`);
@@ -76,7 +86,6 @@ class ProductListManager {
         } catch (e) {
             console.error(e);
             this.showError();
-            // 에러 시 isLast를 true로 막지 않음 → 재시도 가능
         } finally {
             this.setLoading(false);
         }

@@ -5,6 +5,7 @@ import com.zz95.jungjik.api.product.dto.ProductRegisterRequest;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
+import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +45,12 @@ public class ProductController {
      * 상품 목록 조회
      */
     @GetMapping
-    public ApiResponse<Page<ProductListResponse>> getProductList(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<ProductListResponse> products = productService.getProductList(pageable);
-        return ApiResponse.success(products);
+    public ApiResponse<Page<ProductListResponse>> getProductList(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "LATEST") ProductSortType sort
+    ) {
+        return ApiResponse.success(productService.getProductList(page, size, sort));
     }
 
     /**

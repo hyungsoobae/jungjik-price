@@ -101,9 +101,9 @@ class ProductListManager {
         });
 
         // 카드 왼쪽 바 색상
-        if (product.priceDiff > 0) {
+        if (product.diffPrice > 0) {
             card.classList.add('card-up');
-        } else if (product.priceDiff < 0) {
+        } else if (product.diffPrice < 0) {
             card.classList.add('card-down');
         }
 
@@ -134,11 +134,11 @@ class ProductListManager {
         // 등락 정보
         const diffDiv = document.createElement('div');
 
-        if (product.priceDiff !== null && product.priceDiff !== 0) {
-            diffDiv.className = 'price-diff ' + (product.priceDiff > 0 ? 'diff-up' : 'diff-down');
+        if (product.diffPrice !== null && product.diffPrice !== 0) {
+            diffDiv.className = 'price-diff ' + (product.diffPrice > 0 ? 'diff-up' : 'diff-down');
 
-            const arrow = product.priceDiff > 0 ? '▲' : '▼';
-            const absDiff = Math.abs(product.priceDiff).toLocaleString('ko-KR');
+            const arrow = product.diffPrice > 0 ? '▲' : '▼';
+            const absDiff = Math.abs(product.diffPrice).toLocaleString('ko-KR');
             const absRate = Math.abs(product.diffRate).toFixed(1);
             diffDiv.textContent = `${arrow} ${absDiff}원 (${absRate}%)`;
             priceSection.appendChild(diffDiv);

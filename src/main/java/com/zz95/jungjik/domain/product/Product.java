@@ -66,16 +66,22 @@ public class Product extends BaseTimeEntity {
     private Integer currentPrice;
 
     /**
-     * 이전 가격
-     */
-    @Column(name = "previous_price")
-    private Integer previousPrice;
-
-    /**
-     * 가격 변동 일시
+     * 가장 최근 가격 변동 일시
      */
     @Column(name = "price_changed_at")
     private LocalDateTime priceChangedAt;
+
+    /**
+     * 가장 최근 가격 변동 등락폭
+     */
+    @Column(name = "diff_price")
+    private Integer diffPrice;
+
+    /**
+     * 가장 최근 가격 변동 등락률
+     */
+    @Column(name = "diff_rate")
+    private Double diffRate;
 
     public Product(
             String externalProductId,
@@ -96,9 +102,12 @@ public class Product extends BaseTimeEntity {
         if (Objects.equals(this.currentPrice, scraped.getPrice())) {
             return false;
         }
-        this.previousPrice = this.currentPrice;
-        this.priceChangedAt = LocalDateTime.now();
         this.currentPrice = scraped.getPrice();
+        this.priceChangedAt = LocalDateTime.now();
+        int diff = scraped.getPrice() - this.currentPrice;
+        this.diffPrice = diff;
+        this.diffRate = Math.round(((double) diff / this.currentPrice) * 1000) / 10.0;
+
         return true;
     }
 }

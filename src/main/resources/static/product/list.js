@@ -95,14 +95,43 @@ class ProductListManager {
 
         const card = document.createElement('div');
         card.className = 'product-card mb-3';
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            window.location.href = `/products/${product.id}`;
+        });
 
+        // 상품명
         const infoDiv = document.createElement('div');
         infoDiv.className = 'product-info';
 
         const nameDiv = document.createElement('div');
         nameDiv.className = 'product-name';
-        nameDiv.textContent = product.name; // textContent로 XSS 방지
+        nameDiv.textContent = product.name;
         infoDiv.appendChild(nameDiv);
+
+        // 가격 + 등락 + 변동일
+        const priceSection = document.createElement('div');
+        priceSection.className = 'price-section';
+
+        // 현재 가격
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'current-price';
+        priceDiv.textContent = formattedPrice;
+
+        // 등락 방향에 따라 색상 결정
+        if (product.priceDiff === null || product.priceDiff === 0) {
+            priceDiv.classList.add('price-neutral');
+        } else if (product.priceDiff > 0) {
+            priceDiv.classList.add('diff-up');
+        } else {
+            priceDiv.classList.add('diff-down');
+        }
+
+        const priceUnit = document.createElement('span');
+        priceUnit.className = 'price-unit';
+        priceUnit.textContent = '원';
+        priceDiv.appendChild(priceUnit);
+        priceSection.appendChild(priceDiv);
 
         // 등락 정보
         if (product.priceDiff !== null && product.priceDiff !== 0) {
@@ -112,31 +141,15 @@ class ProductListManager {
             const arrow = product.priceDiff > 0 ? '▲' : '▼';
             const absDiff = Math.abs(product.priceDiff).toLocaleString('ko-KR');
             const absRate = Math.abs(product.diffRate).toFixed(1);
-            const changedAt = this.formatChangedAt(product.priceChangedAt);
+            diffDiv.textContent = `${arrow} ${absDiff}원 (${absRate}%)`;
+            priceSection.appendChild(diffDiv);
 
-            diffDiv.textContent = `${arrow} ${absDiff}원 (${absRate}%) · ${changedAt}`;
-            infoDiv.appendChild(diffDiv);
+            // 변동일
+            const changedAtDiv = document.createElement('div');
+            changedAtDiv.className = 'price-changed-at';
+            changedAtDiv.textContent = this.formatChangedAt(product.priceChangedAt);
+            priceSection.appendChild(changedAtDiv);
         }
-
-        const priceSection = document.createElement('div');
-        priceSection.className = 'price-section';
-
-        const priceDiv = document.createElement('div');
-        priceDiv.className = 'current-price';
-        priceDiv.textContent = formattedPrice;
-
-        const priceUnit = document.createElement('span');
-        priceUnit.className = 'price-unit';
-        priceUnit.textContent = '원';
-        priceDiv.appendChild(priceUnit);
-
-        const link = document.createElement('a');
-        link.href = `/products/${product.id}`;
-        link.className = 'btn btn-dark btn-sm px-3';
-        link.textContent = '상세보기';
-
-        priceSection.appendChild(priceDiv);
-        priceSection.appendChild(link);
 
         card.appendChild(infoDiv);
         card.appendChild(priceSection);
@@ -166,14 +179,13 @@ class ProductListManager {
 
         const changed = new Date(isoString);
         const now = new Date();
-        const diffMs = now - changed;
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffDays = Math.floor((now - changed) / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 0) return '오늘 변동';
-        if (diffDays === 1) return '어제 변동';
-        if (diffDays < 7) return `${diffDays}일 전 변동`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)}주 전 변동`;
-        return `${Math.floor(diffDays / 30)}개월 전 변동`;
+        if (diffDays === 0) return '오늘';
+        if (diffDays === 1) return '어제';
+        if (diffDays < 7) return `${diffDays}일 전`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)}주 전`;
+        return `${Math.floor(diffDays / 30)}개월 전`;
     }
 }
 

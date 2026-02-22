@@ -31,9 +31,9 @@
 
 /* 상품 가격 등락 정보 */
 .price-diff {
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .diff-up {
@@ -42,6 +42,12 @@
 
 .diff-down {
     color: #1a9e5f;
+}
+
+.price-changed-at {
+    font-size: 0.78rem;
+    color: #6c757d;
+    margin-top: 2px;
 }
 
 /* 오른쪽: 가격 및 버튼 영역 */
@@ -85,23 +91,19 @@
 }
 
 .current-price {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 800;
-    color: #0d6efd;
     white-space: nowrap;
+}
+
+.price-neutral {
+    color: #212529;
 }
 
 .price-unit {
     font-size: 1.1rem;
     font-weight: 700;
     margin-left: 2px;
-}
-
-/* 상세보기 버튼 */
-.product-card .btn {
-    border-radius: 6px;
-    font-weight: 500;
-    white-space: nowrap;
 }
 
 /* 로딩 스피너 숨김 기본값 */

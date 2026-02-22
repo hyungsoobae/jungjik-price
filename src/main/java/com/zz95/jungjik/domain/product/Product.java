@@ -102,10 +102,17 @@ public class Product extends BaseTimeEntity {
         if (Objects.equals(this.currentPrice, scraped.getPrice())) {
             return false;
         }
-        int diff = scraped.getPrice() - this.currentPrice;
-        this.currentPrice = scraped.getPrice();
+        int oldPrice = this.currentPrice;
+        int newPrice = scraped.getPrice();
+        int diff = newPrice - oldPrice;
+
+        this.currentPrice = newPrice;
         this.diffPrice = diff;
-        this.diffRate = Math.round(((double) diff / this.currentPrice) * 1000) / 10.0;
+        if (oldPrice > 0) {
+            this.diffRate = Math.round(((double) diff / oldPrice) * 1000) / 10.0;
+        } else {
+            this.diffRate = 0.0; // 이전 가격이 0일 경우
+        }
         this.priceChangedAt = LocalDateTime.now();
 
         return true;

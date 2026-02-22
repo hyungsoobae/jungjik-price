@@ -23,10 +23,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     List<Product> findByIsActiveTrue();
 
-
+    /**
+     * 상품 출처별 조회(페이징)
+     */
+    Page<Product> findBySource(ScraperType source, Pageable pageable);
 
     /**
      * 상품명 LIKE 검색(페이징)
      */
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+
+    /**
+     * 상품 출처별, 상품명 LIKE 검색(페이징)
+     */
+    Page<Product> findBySourceAndNameContainingIgnoreCase(ScraperType source, String keyword, Pageable pageable);
+
 }

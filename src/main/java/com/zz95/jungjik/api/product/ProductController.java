@@ -7,6 +7,7 @@ import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
 import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.common.ApiResponse;
+import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,9 +47,9 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "LATEST") ProductSortType sort,
-            @RequestParam(required = false) String keyword
-    ) {
-        return ApiResponse.success(productService.getProductList(page, size, sort, keyword));
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ScraperType source) {
+        return ApiResponse.success(productService.getProductList(page, size, sort, keyword, source));
     }
 
     /**

@@ -72,12 +72,23 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword) {
+    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword, ScraperType source) {
         Pageable pageable = PageRequest.of(page, size, sortType.getSort());
 
-        Page<Product> products = (keyword == null || keyword.isBlank())
-                ? productRepository.findAll(pageable)
-                : productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasSource = source != null;
+
+        Page<Product> products;
+
+        if (hasSource && hasKeyword) {
+            products = productRepository.findBySourceAndNameContainingIgnoreCase(source, keyword, pageable);
+        } else if (hasSource) {
+            products = productRepository.findBySource(source, pageable);
+        } else if (hasKeyword) {
+            products = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            products = productRepository.findAll(pageable);
+        }
 
         return products.map(ProductListResponse::from);
     }

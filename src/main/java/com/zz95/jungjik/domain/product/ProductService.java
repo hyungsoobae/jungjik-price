@@ -72,10 +72,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType) {
+    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword) {
         Pageable pageable = PageRequest.of(page, size, sortType.getSort());
-        return productRepository.findAll(pageable)
-                .map(ProductListResponse::from);
+
+        Page<Product> products = (keyword == null || keyword.isBlank())
+                ? productRepository.findAll(pageable)
+                : productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+
+        return products.map(ProductListResponse::from);
     }
 
     @Transactional

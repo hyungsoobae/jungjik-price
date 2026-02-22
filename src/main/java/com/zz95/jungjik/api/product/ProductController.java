@@ -10,9 +10,6 @@ import com.zz95.jungjik.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,11 +43,12 @@ public class ProductController {
      */
     @GetMapping
     public ApiResponse<Page<ProductListResponse>> getProductList(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "LATEST") ProductSortType sort
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "LATEST") ProductSortType sort,
+            @RequestParam(required = false) String keyword
     ) {
-        return ApiResponse.success(productService.getProductList(page, size, sort));
+        return ApiResponse.success(productService.getProductList(page, size, sort, keyword));
     }
 
     /**

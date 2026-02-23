@@ -1,8 +1,11 @@
 package com.zz95.jungjik.domain.price;
 
 import com.zz95.jungjik.domain.price.dto.PriceHistoryResponse;
+import com.zz95.jungjik.domain.price.dto.PriceUpdateResult;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductRepository;
+import com.zz95.jungjik.global.error.ErrorCode;
+import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.global.slack.SlackClient;
 import com.zz95.jungjik.global.slack.SlackMessageGenerator;
 import com.zz95.jungjik.scraping.PriceScraper;
@@ -32,8 +35,11 @@ public class PriceHistoryService {
      * 단일 상품 가격 수집
      */
     @Async("scrapingExecutor")
-    public void collect(Product product) {
-        log.info("[상품 가격 수집 시작] ProductId: {}, Thread: {}", product.getId(), Thread.currentThread().getName());
+    public void collect(Long productId) {
+        log.info("[상품 가격 수집 시작] productId={}, thread={}", productId, Thread.currentThread().getName());
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         PriceScraper scraper = scraperResolver.resolve(product.getProductUrl());
         ScrapedProduct scraped;
@@ -41,24 +47,21 @@ public class PriceHistoryService {
         try {
             scraped = scraper.scrape(product.getProductUrl());
         } catch (Exception e) {
-            log.error("[상품 가격 수집 실패] ProductId: {}, URL: {}, error: {}",
-                    product.getId(), product.getProductUrl(), e.getMessage(), e);
-
+            log.error("[상품 가격 수집 실패] productId={}, url={}, error={}",
+                    productId, product.getProductUrl(), e.getMessage(), e);
             slackClient.sendToAdmin(SlackMessageGenerator.getScrapingErrorNotice(product, e));
             return;
         }
 
-        Integer oldPrice = product.getCurrentPrice();
+        // 별도 트랜잭션에서 가격 이력 저장 및 상품 가격 업데이트
+        // 결과를 DTO로 받아 트랜잭션 종료 후에도 필요한 값을 안전하게 사용
+        PriceUpdateResult result = priceUpdateService.updateProductAndSaveHistory(productId, scraped);
 
-        // Product.currentPrice 변동 확인, 업데이트
-        boolean isChanged = priceUpdateService.updateProductAndSaveHistory(product, scraped);
-
-        // 가격 변동 시 Slack 알림 발송
-        if (isChanged) {
-            slackClient.sendToUser(SlackMessageGenerator.getPriceNotice(product, oldPrice));
+        if (result.isChanged()) {
+            slackClient.sendToUser(SlackMessageGenerator.getPriceNotice(result));
         }
 
-        log.info("[상품 가격 수집 완료] ProductId: {}", product.getId());
+        log.info("[상품 가격 수집 완료] productId={}", productId);
     }
 
     /**

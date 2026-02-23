@@ -26,7 +26,7 @@ public class AdminPriceController {
     @PostMapping("/collect")
     public ApiResponse<Void> collectAll() {
         productRepository.findByIsActiveTrue()
-                .forEach(priceHistoryService::collect);
+                .forEach(product -> priceHistoryService.collect(product.getId()));
 
         return ApiResponse.success();
     }
@@ -36,10 +36,11 @@ public class AdminPriceController {
      */
     @PostMapping("/collect/{productId}")
     public ApiResponse<Void> collectOne(@PathVariable Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        if (!productRepository.existsById(productId)) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
 
-        priceHistoryService.collect(product);
+        priceHistoryService.collect(productId);
 
         return ApiResponse.success();
     }

@@ -1,5 +1,6 @@
 package com.zz95.jungjik.global.slack;
 
+import com.zz95.jungjik.domain.price.dto.PriceUpdateResult;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.global.slack.dto.SlackMessageRequest;
 
@@ -13,9 +14,13 @@ public class SlackMessageGenerator {
 
     /**
      * 가격 변동 notice (사용자)
+     * 이 메서드는 @Async 메소드(트랜잭션 밖)에서 호출되고
+     * 트랜잭션이 종료된 시점에 Product 엔티티는 detached 상태이므로
+     * PriceUpdateResult DTO 사용
      */
-    public static SlackMessageRequest getPriceNotice(Product product, int oldPrice) {
-        int newPrice = product.getCurrentPrice();
+    public static SlackMessageRequest getPriceNotice(PriceUpdateResult result) {
+        int oldPrice = result.oldPrice();
+        int newPrice = result.newPrice();
         String color = (newPrice < oldPrice) ? "#36a64f" : "#ff0000";
         String emoji = (newPrice < oldPrice) ? "📉 가격 하락 알림!" : "📈 가격 변동 알림";
         String rateText = oldPrice > 0
@@ -26,8 +31,8 @@ public class SlackMessageGenerator {
                 new SlackMessageRequest.Attachment(
                         color,
                         emoji,
-                        product.getName(),
-                        product.getProductUrl(),
+                        result.productName(),
+                        result.productUrl(),
                         String.format("기존가: %,d원\n*변경가: %,d원 (%s)*", oldPrice, newPrice, rateText),
                         "정직한 가격 추적기",
                         System.currentTimeMillis() / 1000,

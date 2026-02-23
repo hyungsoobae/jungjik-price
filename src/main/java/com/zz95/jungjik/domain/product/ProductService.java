@@ -9,6 +9,7 @@ import com.zz95.jungjik.scraping.PriceScraper;
 import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
 import com.zz95.jungjik.scraping.ScraperType;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -65,12 +66,18 @@ public class ProductService {
                 });
     }
 
+    /**
+     * 상품 단건 조회
+     */
     @Transactional(readOnly = true)
     public Product getProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
+    /**
+     * 상품 목록 조회 (페이징, 검색, 정렬)
+     */
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword, ScraperType source) {
         Pageable pageable = PageRequest.of(page, size, sortType.getSort());
@@ -93,12 +100,18 @@ public class ProductService {
         return products.map(ProductListResponse::from);
     }
 
+    /**
+     * 상품 삭제
+     */
     @Transactional
     public void deleteProduct(Long id) {
         Product product = getProduct(id);
         productRepository.delete(product);
     }
 
+    /**
+     * 상품 존재 여부 확인
+     */
     @Transactional(readOnly = true)
     public void validateProductExists(Long productId) {
         if (!productRepository.existsById(productId)) {

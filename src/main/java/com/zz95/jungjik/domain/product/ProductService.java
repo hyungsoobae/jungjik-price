@@ -1,6 +1,8 @@
 package com.zz95.jungjik.domain.product;
 
+import com.zz95.jungjik.api.product.dto.ProductListResponse;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
+import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.error.ErrorCode;
 import com.zz95.jungjik.global.error.exception.BusinessException;
 import com.zz95.jungjik.scraping.PriceScraper;
@@ -9,6 +11,7 @@ import com.zz95.jungjik.scraping.ScraperResolver;
 import com.zz95.jungjik.scraping.ScraperType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,8 +72,25 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Product> getProductList(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword, ScraperType source) {
+        Pageable pageable = PageRequest.of(page, size, sortType.getSort());
+
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasSource = source != null;
+
+        Page<Product> products;
+
+        if (hasSource && hasKeyword) {
+            products = productRepository.findBySourceAndNameContainingIgnoreCase(source, keyword, pageable);
+        } else if (hasSource) {
+            products = productRepository.findBySource(source, pageable);
+        } else if (hasKeyword) {
+            products = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            products = productRepository.findAll(pageable);
+        }
+
+        return products.map(ProductListResponse::from);
     }
 
     @Transactional

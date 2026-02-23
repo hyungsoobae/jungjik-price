@@ -1,16 +1,16 @@
 package com.zz95.jungjik.api.product;
 
+import com.zz95.jungjik.api.product.dto.ProductListResponse;
 import com.zz95.jungjik.api.product.dto.ProductRegisterRequest;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
+import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.common.ApiResponse;
+import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,9 +43,13 @@ public class ProductController {
      * 상품 목록 조회
      */
     @GetMapping
-    public ApiResponse<Page<Product>> getProductList(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Product> products = productService.getProductList(pageable);
-        return ApiResponse.success(products);
+    public ApiResponse<Page<ProductListResponse>> getProductList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "LATEST") ProductSortType sort,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ScraperType source) {
+        return ApiResponse.success(productService.getProductList(page, size, sort, keyword, source));
     }
 
     /**

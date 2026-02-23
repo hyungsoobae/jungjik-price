@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -50,5 +54,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
+    }
+
+    /**
+     * @RequestParam enum 타입 불일치 시 발생하는 예외 처리
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("MethodArgumentTypeMismatchException", e);
+
+        Class<?> requiredType = e.getRequiredType();
+        String message;
+
+        if (requiredType != null && requiredType.isEnum()) {
+            String validValues = Arrays.stream(requiredType.getEnumConstants())
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", "));
+            message = String.format("'%s'은 유효하지 않은 값입니다. 가능한 값: [%s]", e.getValue(), validValues);
+        } else {
+            message = "잘못된 파라미터입니다: " + e.getName();
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, message));
     }
 }

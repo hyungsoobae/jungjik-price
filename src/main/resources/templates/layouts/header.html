@@ -1,0 +1,16 @@
+<nav th:fragment="header" class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/products">
+            <span class="text-primary">JUNG</span>JIK
+        </a>
+
+        <form class="header-search-form" id="header-search-form">
+            <select id="header-source" class="header-select">
+                <option value="">전체</option>
+                <option value="MUSINSA">무신사</option>
+            </select>
+            <input id="header-search" class="header-search-input" type="text" placeholder="상품명을 입력하세요">
+            <button type="submit" class="header-search-btn">검색</button>
+        </form>
+    </div>
+</nav>

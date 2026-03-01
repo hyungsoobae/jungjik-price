@@ -1,6 +1,8 @@
 class ProductListManager {
     constructor() {
-        this.currentPage = 0;
+        this.PAGE_SIZE = 7;
+        this.page = 0;
+        this.lastId = null;
         this.isLast = false;
         this.isLoading = false;
         this.sortType = 'LATEST';
@@ -40,9 +42,19 @@ class ProductListManager {
 
     updateUrl() {
         const params = new URLSearchParams();
-        if (this.keyword) params.set('keyword', this.keyword);
-        if (this.source) params.set('source', this.source);
-        if (this.sortType !== 'LATEST') params.set('sort', this.sortType);
+        if (this.keyword) {
+            params.set('keyword', this.keyword);
+        }
+        if (this.source) {
+            params.set('source', this.source);
+        }
+        if (this.sortType === 'LATEST') {
+            if (this.lastId) {
+                params.set('lastId', this.lastId);
+            }
+        } else {
+            params.set('page', this.page);
+        }
 
         const newUrl = params.toString()
             ? `${window.location.pathname}?${params.toString()}`
@@ -52,7 +64,8 @@ class ProductListManager {
     }
 
     reset() {
-        this.currentPage = 0;
+        this.page = 0;
+        this.lastId = null;
         this.isLast = false;
         this.container.innerHTML = '';
         this.updateUrl();
@@ -82,14 +95,15 @@ class ProductListManager {
 
         try {
             const params = new URLSearchParams();
-            params.set('page', this.currentPage);
-            params.set('size', '10');
+            params.set('size', this.PAGE_SIZE);
             params.set('sort', this.sortType);
-            if (this.keyword) {
-                params.set('keyword', this.keyword);
-            }
-            if (this.source) {
-                params.set('source', this.source);
+            if (this.keyword) params.set('keyword', this.keyword);
+            if (this.source) params.set('source', this.source);
+
+            if (this.sortType === 'LATEST') {
+                if (this.lastId) params.set('lastId', this.lastId);
+            } else {
+                params.set('page', this.page);
             }
 
             const response = await fetch(`/api/products?${params.toString()}`);
@@ -98,12 +112,18 @@ class ProductListManager {
             const result = await response.json();
 
             if (result.status === 'success' && result.data) {
-                const { content, last } = result.data;
+                const { content, hasNext } = result.data;
 
                 if (content && content.length > 0) {
                     this.render(content);
-                    this.isLast = last;
-                    this.currentPage++;
+                    this.isLast = !hasNext;
+
+                    if (this.sortType === 'LATEST') {
+                        // 마지막 항목 id를 커서로
+                        this.lastId = content[content.length - 1].id;
+                    } else {
+                        this.page++;
+                    }
 
                     // sentinel이 아직 화면에 보이면 다음 페이지 자동 호출
                     // setTimeout 대신 requestAnimationFrame으로 렌더링 완료 후 확인

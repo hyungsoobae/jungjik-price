@@ -43,13 +43,14 @@ public class ProductController {
      * 상품 목록 조회
      */
     @GetMapping
-    public ApiResponse<Page<ProductListResponse>> getProductList(
-            @RequestParam(defaultValue = "0") int page,
+    public ApiResponse<ProductListResponse> getProductList(
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "LATEST") ProductSortType sort,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ScraperType source) {
-        return ApiResponse.success(productService.getProductList(page, size, sort, keyword, source));
+        return ApiResponse.success(productService.getProductList(size, lastId, page, sort, keyword, source));
     }
 
     /**

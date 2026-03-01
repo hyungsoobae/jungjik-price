@@ -17,4 +17,8 @@ public enum ProductSortType {
     public Sort getSort() {
         return sort;
     }
+
+    public boolean isNoOffset() {
+        return this == LATEST;
+    }
 }

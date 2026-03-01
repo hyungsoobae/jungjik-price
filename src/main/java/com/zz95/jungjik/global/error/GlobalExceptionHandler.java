@@ -3,11 +3,13 @@ package com.zz95.jungjik.global.error;
 import com.zz95.jungjik.global.common.ApiResponse;
 import com.zz95.jungjik.global.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Arrays;
@@ -74,6 +76,24 @@ public class GlobalExceptionHandler {
         } else {
             message = "잘못된 파라미터입니다: " + e.getName();
         }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, message));
+    }
+
+    /**
+     * @RequestParam @Max, @Min 등 검증 실패 시 발생하는 예외 처리
+     */
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+        log.error("HandlerMethodValidationException", e);
+
+        String message = e.getValueResults().stream()
+                .flatMap(result -> result.getResolvableErrors().stream())
+                .findFirst()
+                .map(MessageSourceResolvable::getDefaultMessage)
+                .orElse("올바르지 않은 입력값입니다.");
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

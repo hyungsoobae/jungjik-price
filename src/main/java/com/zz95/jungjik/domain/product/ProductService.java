@@ -1,6 +1,7 @@
 package com.zz95.jungjik.domain.product;
 
 import com.zz95.jungjik.api.product.dto.ProductListResponse;
+import com.zz95.jungjik.api.product.dto.ProductResponse;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
 import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.error.ErrorCode;
@@ -11,13 +12,12 @@ import com.zz95.jungjik.scraping.ScraperResolver;
 import com.zz95.jungjik.scraping.ScraperType;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -77,16 +77,37 @@ public class ProductService {
 
     /**
      * 상품 목록 조회 (페이징, 검색, 정렬)
+     * 정렬 기준에 따라 No-offset / OFFSET 전략 분기
      */
     @Transactional(readOnly = true)
-    public Page<ProductListResponse> getProductList(int page, int size, ProductSortType sortType, String keyword, ScraperType source) {
-        Pageable pageable = PageRequest.of(page, size, sortType.getSort());
+    public ProductListResponse getProductList(int size, Long lastId, int page, ProductSortType sort, String keyword, ScraperType source) { // [변경] 반환타입 및 파라미터
+        if (sort.isNoOffset()) {
+            return getProductListNoOffset(size, lastId, keyword, source);
+        }
+        return getProductListOffset(page, size, sort, keyword, source);
+    }
+
+    private ProductListResponse getProductListNoOffset(int size, Long lastId, String keyword, ScraperType source) {
+        List<Product> products = productRepository.findProductsNoOffset(lastId, size, keyword, source);
+
+        boolean hasNext = products.size() > size;
+        if (hasNext) {
+            products = products.subList(0, size);
+        }
+
+        return new ProductListResponse(
+                products.stream().map(ProductResponse::from).toList(),
+                hasNext
+        );
+    }
+
+    private ProductListResponse getProductListOffset(int page, int size, ProductSortType sort, String keyword, ScraperType source) {
+        Pageable pageable = PageRequest.of(page, size, sort.getSort());
 
         boolean hasKeyword = keyword != null && !keyword.isBlank();
         boolean hasSource = source != null;
 
         Page<Product> products;
-
         if (hasSource && hasKeyword) {
             products = productRepository.findBySourceAndNameContainingIgnoreCase(source, keyword, pageable);
         } else if (hasSource) {
@@ -97,7 +118,10 @@ public class ProductService {
             products = productRepository.findAll(pageable);
         }
 
-        return products.map(ProductListResponse::from);
+        return new ProductListResponse(
+                products.stream().map(ProductResponse::from).toList(),
+                !products.isLast()
+        );
     }
 
     /**

@@ -9,6 +9,7 @@ import com.zz95.jungjik.domain.sort.ProductSortType;
 import com.zz95.jungjik.global.common.ApiResponse;
 import com.zz95.jungjik.scraping.ScraperType;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class ProductController {
      */
     @GetMapping
     public ApiResponse<ProductListResponse> getProductList(
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") @Max(value = 100, message = "size는 최대 100까지 가능합니다.") int size,
             @RequestParam(required = false) Long lastId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "LATEST") ProductSortType sort,

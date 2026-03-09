@@ -2,6 +2,7 @@ package com.zz95.jungjik.domain.price;
 
 import com.zz95.jungjik.domain.price.dto.PriceHistoryResponse;
 import com.zz95.jungjik.domain.price.dto.PriceUpdateResult;
+import com.zz95.jungjik.domain.price.event.PriceUpdatedEvent;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductRepository;
 import com.zz95.jungjik.global.error.ErrorCode;
@@ -13,6 +14,7 @@ import com.zz95.jungjik.scraping.ScrapedProduct;
 import com.zz95.jungjik.scraping.ScraperResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class PriceHistoryService {
     private final PriceUpdateService priceUpdateService;
     private final ScraperResolver scraperResolver;
     private final SlackClient slackClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 단일 상품 가격 수집
@@ -58,7 +61,7 @@ public class PriceHistoryService {
         PriceUpdateResult result = priceUpdateService.updateProductAndSaveHistory(productId, scraped);
 
         if (result.isChanged()) {
-            slackClient.sendToUser(SlackMessageGenerator.getPriceNotice(result));
+            eventPublisher.publishEvent(PriceUpdatedEvent.from(result));
         }
 
         log.info("[상품 가격 수집 완료] productId={}", productId);

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: jungjik
+
+  datasource:
+    url: ${DATASOURCE_URL}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+
+slack:
+  webhook:
+    user-url: http://test-slack-url
+    admin-url: http://test-slack-url
+
+admin:
+  api:
+    token: test-token
+
+scraping:
+  user-agents:
+    - "test-agent"

@@ -2,6 +2,7 @@ package com.zz95.jungjik.api.product;
 
 import com.zz95.jungjik.api.product.dto.ProductListResponse;
 import com.zz95.jungjik.api.product.dto.ProductRegisterRequest;
+import com.zz95.jungjik.domain.price.PriceHistoryService;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.domain.product.ProductService;
 import com.zz95.jungjik.domain.product.dto.ProductRegisterResult;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
+    private final PriceHistoryService priceHistoryService;
 
 
     /**
@@ -28,6 +30,10 @@ public class ProductController {
     @PostMapping
     public ApiResponse<ProductRegisterResult> registerProduct(@RequestBody @Valid ProductRegisterRequest request) {
         ProductRegisterResult result = productService.registerProduct(request.productUrl());
+        if (result.isNew()) {
+            priceHistoryService.collect(result.productId());
+        }
+
         return ApiResponse.success(result);
     }
 

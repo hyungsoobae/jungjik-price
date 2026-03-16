@@ -127,6 +127,8 @@ Flyway가 자동으로 테이블을 생성합니다. `http://localhost:8080/prod
 | `GET` | `/api/products/{id}/price-histories` | 가격 이력 조회 |
 | `POST` | `/api/admin/prices/collect` | 전체 상품 가격 수동 수집 |
 | `POST` | `/api/admin/prices/collect/{id}` | 단일 상품 가격 수동 수집 |
+| `PUT` | `/api/products/{id}/target-price-alert` | 목표가 설정/수정 |
+| `DELETE` | `/api/products/{id}/target-price-alert` | 목표가 삭제 |
 
 Admin API는 요청 헤더에 `X-Admin-Token: {token}` 필요
 

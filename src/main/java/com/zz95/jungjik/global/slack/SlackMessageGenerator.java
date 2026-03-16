@@ -50,7 +50,7 @@ public class SlackMessageGenerator {
                 new SlackMessageRequest.Attachment(
                         "#36a64f",
                         "🎯 목표가 도달 알림!",
-                        alert.getProduct().getName(),
+                        event.productName(),
                         event.productUrl(),
                         String.format("목표가: %,d원\n*현재가: %,d원*", alert.getTargetPrice(), event.newPrice()),
                         "정직한 가격 추적기",

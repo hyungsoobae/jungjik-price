@@ -1,5 +1,6 @@
 package com.zz95.jungjik.global.slack;
 
+import com.zz95.jungjik.domain.alert.targetprice.ProductTargetPriceAlert;
 import com.zz95.jungjik.domain.price.event.PriceUpdatedEvent;
 import com.zz95.jungjik.domain.product.Product;
 import com.zz95.jungjik.global.slack.dto.SlackMessageRequest;
@@ -34,6 +35,24 @@ public class SlackMessageGenerator {
                         event.productName(),
                         event.productUrl(),
                         String.format("기존가: %,d원\n*변경가: %,d원 (%s)*", oldPrice, newPrice, rateText),
+                        "정직한 가격 추적기",
+                        System.currentTimeMillis() / 1000,
+                        null
+                )
+        ));
+    }
+
+    /**
+     * 목표가 달성 notice (사용자)
+     */
+    public static SlackMessageRequest getTargetPriceNotice(ProductTargetPriceAlert alert, PriceUpdatedEvent event) {
+        return new SlackMessageRequest(List.of(
+                new SlackMessageRequest.Attachment(
+                        "#36a64f",
+                        "🎯 목표가 도달 알림!",
+                        alert.getProduct().getName(),
+                        event.productUrl(),
+                        String.format("목표가: %,d원\n*현재가: %,d원*", alert.getTargetPrice(), event.newPrice()),
                         "정직한 가격 추적기",
                         System.currentTimeMillis() / 1000,
                         null
